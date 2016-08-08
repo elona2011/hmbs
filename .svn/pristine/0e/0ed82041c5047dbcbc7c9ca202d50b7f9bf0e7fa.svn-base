@@ -1,0 +1,44 @@
+import React from 'react';
+import {ajax} from '~/services/ajax.js'
+
+var enhanceComponent = (Component) => class Enhance extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: '',
+      managers: []
+    }
+    this.Store = {
+      _handlers: [],
+      value: '',
+      managers: [],
+      onChange: function(handler) {
+        this._handlers.push(handler);
+      },
+      set: function(key, value) {
+        this[key] = value;
+        this._handlers.forEach(handler => handler())
+      },
+      get: function(key) {
+        return this[key];
+      }
+    };
+    ajax({url: 'decorationCompany/people/getProjectManagers', type: 'GET'}).then(d => {
+      this.Store.set('managers', d.data)
+    })
+    this.Store.onChange(function() {
+      this.setState({value: this.Store.get('value'), managers: this.Store.get('managers').slice()})
+      this.props.onChange && this.props.onChange(this.Store.get('value'))
+    }.bind(this));
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.Store.set('value', nextProps.value)
+  }
+
+  render() {
+    return (<Component onChange={this.Store.set.bind(this.Store)} value={this.state.value} managers={this.state.managers}/>)
+  }
+};
+
+export default enhanceComponent;

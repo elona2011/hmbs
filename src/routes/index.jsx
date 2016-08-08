@@ -1,0 +1,52 @@
+import React, {PropTypes} from 'react';
+import {
+  Router,
+  Route,
+  IndexRoute,
+  Link,
+  hashHistory,
+  useRouterHistory
+} from 'react-router';
+import {createHashHistory} from 'history'
+import App from '../components/App';
+import {ProjectLists} from '../components/ProjectLists/ProjectList';
+import {ProjectListsDetail} from '../components/ProjectListsDetail/ProjectListsDetail';
+import {ManagerLists} from '../components/ManagerLists/ManagerList';
+import NotFound from '../components/NotFound';
+import {Login} from '~/components/Login'
+
+const appHistory = useRouterHistory(createHashHistory)({queryKey: false})
+
+function authCheck(nextState, replace) {
+  // console.log('check login')
+  if (!localStorage.hbmsLogin) {
+    replace({
+      pathname: '/',
+      state: {
+        nextPathname: nextState.location.pathname
+      }
+    })
+  }
+}
+
+const Routes = ({history}) => <Router history={appHistory}>
+  <Route path="/" component={Login}/>
+  <Route path="/project-lists" component={ProjectLists} onEnter={authCheck}/>
+  <Route path="/project-lists-detail/:id" component={ProjectListsDetail} onEnter={authCheck}/>
+  <Route path="/manager-lists" component={ManagerLists} onEnter={authCheck}/>
+  <Route path="*" component={NotFound}/>
+</Router>;
+
+// const Routes = ({history}) => <Router history={history}>
+//   <Route path="/" component={Login}/>
+//   <Route path="/project-lists" component={ProjectLists} onEnter={authCheck}/>
+//   <Route path="/project-lists-detail/?id=:id" component={ProjectListsDetail} onEnter={authCheck}/>
+//   <Route path="/manager-lists" component={ManagerLists} onEnter={authCheck}/>
+//   <Route path="*" component={NotFound}/>
+// </Router>;
+
+Routes.propTypes = {
+  history: PropTypes.any
+};
+
+export default Routes;

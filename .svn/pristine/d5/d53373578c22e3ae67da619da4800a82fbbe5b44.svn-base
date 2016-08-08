@@ -1,0 +1,40 @@
+import React from 'react';
+import {Card, Col, Row} from 'antd';
+import Node from '~/components/ProjectListsDetail/ProblemsNode'
+
+class Problem extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {}
+  }
+
+  componentDidMount() {
+    var problem = []
+    this.props.problem && this.props.problem.forEach((n, i) => problem.push(
+      <Card key={i} title={'验收节点：' + n.name} bordered={true}>
+        <Node node={n.projectNodeItemVoList}/>
+      </Card>
+    ))
+    this.setState({problem})
+  }
+
+  componentWillReceiveProps(nextProps) {
+    var problem = []
+    nextProps.problem.forEach((n, i) => problem.push(
+      <Card key={i} title={'验收节点：' + n.name} bordered={true}>
+        <Node node={n.projectNodeItemVoList}/>
+      </Card>
+    ))
+    this.setState({problem})
+  }
+
+  render() {
+    return (
+      <div>
+        {this.state.problem}
+      </div>
+    );
+  }
+}
+
+export default Problem

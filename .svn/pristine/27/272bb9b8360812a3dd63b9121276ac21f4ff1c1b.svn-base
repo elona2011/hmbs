@@ -1,0 +1,41 @@
+import React from 'react';
+import {Form, Row, Col} from 'antd';
+
+const FormItem = Form.Item;
+
+class Trouble extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {}
+  }
+
+  componentDidMount() {
+    var trouble = []
+    this.props.trouble && this.props.trouble.forEach((n, i) => trouble.push(
+      <FormItem key={i} label="隐患记录">
+        <p className="ant-form-text">{n.content}</p>
+      </FormItem>
+    ))
+    this.setState({trouble})
+  }
+
+  componentWillReceiveProps(nextProps) {
+    var trouble = []
+    nextProps.trouble.forEach((n, i) => trouble.push(
+      <FormItem key={i} label="隐患记录">
+        <p className="ant-form-text">{n.content}</p>
+      </FormItem>
+    ))
+    this.setState({trouble})
+  }
+
+  render() {
+    return (
+      <div>
+        {this.state.trouble}
+      </div>
+    );
+  }
+}
+
+export default Trouble

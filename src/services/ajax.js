@@ -1,0 +1,75 @@
+import $ from 'jquery';
+import {Modal} from 'antd';
+import {hashHistory} from 'react-router'
+
+const error = Modal.error;
+// const host = 'http://192.168.1.11:80'
+// const host = 'http://127.0.0.1:8989'
+// const host='http://test.ihomefnt.com:8099'
+const host=window.location.origin
+
+function ajax(options) {
+  return new Promise(function(resolve, reject) {
+    $.ajax({
+      url: host + '/hbms/' + options.url,
+      type: options.type || 'POST',
+      // dataType: 'json',
+      contentType: 'application/json',
+      // contentType: 'text/plain',
+      data: options.data ? JSON.stringify(options.data) : null,
+      success: function(data) {
+        if (data.code == 30000) {
+          resolve(data);
+        } else {
+          error({
+            title: '警告',
+            content: data.msg,
+            onOk() {
+              return new Promise((resolve) => {
+                setTimeout(resolve, 0);
+              });
+            },
+            onCancel() {},
+          });
+          resolve(data);
+        }
+      },
+      error: function(xhr, data, status) {
+        if(xhr.status===401){
+          hashHistory.push('/')
+        }
+        reject(data)
+      }
+    })
+  })
+}
+
+function login(options) {
+  return new Promise(function(resolve, reject) {
+    console.log($.fn.jquery)
+    $.ajax({
+      url: host + '/hbms/' + options.url + '?username=' + options.data.username + '&password=' + options.data.password,
+      type: 'POST',
+      // dataType: 'json',
+      // contentType: 'application/json',
+      cache: true,
+      crossDomain: true,
+      xhrFields: {
+        withCredentials: true
+      },
+      contentType: 'text/plain',
+      success: function(data) {
+        localStorage.hbmsLogin = true;
+        hashHistory.push('/project-lists')
+      },
+      error: function(xhr, data, status) {
+        reject(data)
+      }
+    })
+  })
+}
+
+export {
+  ajax,
+  login
+};

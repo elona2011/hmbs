@@ -1,0 +1,41 @@
+import React, {PropTypes} from 'react';
+import {Router, Route, IndexRoute, Link, hashHistory} from 'react-router';
+import App from '../components/App';
+import {ProjectLists} from '../components/ProjectLists/ProjectList';
+import {ProjectListsDetail} from '../components/ProjectListsDetail/ProjectListsDetail';
+import {ManagerLists} from '../components/ManagerLists/ManagerList';
+import NotFound from '../components/NotFound';
+import {Login} from '~/components/Login'
+
+function authCheck(nextState, replace) {
+  // if (!window.hbmsLogin) {
+  //   replace({
+  //     pathname: '/',
+  //     state: {
+  //       nextPathname: nextState.location.pathname
+  //     }
+  //   })
+  // }
+}
+
+const Routes = ({history}) => <Router history={hashHistory}>
+  <Route path="/" component={Login}/>
+  <Route path="/project-lists" component={ProjectLists} onEnter={authCheck}/>
+  <Route path="/project-lists-detail/:id" component={ProjectListsDetail} onEnter={authCheck}/>
+  <Route path="/manager-lists" component={ManagerLists} onEnter={authCheck}/>
+  <Route path="*" component={NotFound}/>
+</Router>;
+
+// const Routes = ({history}) => <Router history={history}>
+//   <Route path="/" component={Login}/>
+//   <Route path="/project-lists" component={ProjectLists} onEnter={authCheck}/>
+//   <Route path="/project-lists-detail/?id=:id" component={ProjectListsDetail} onEnter={authCheck}/>
+//   <Route path="/manager-lists" component={ManagerLists} onEnter={authCheck}/>
+//   <Route path="*" component={NotFound}/>
+// </Router>;
+
+Routes.propTypes = {
+  history: PropTypes.any
+};
+
+export default Routes;
