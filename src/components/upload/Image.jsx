@@ -10,6 +10,9 @@ class Image extends React.Component {
       priviewImage: '',
       fileList: []
     };
+    this.props.fileList && this.props.fileList.forEach((n, i) => {
+      this.state.fileList.push({uid: n.id, name: n.id, status: 'done', url: n.url})
+    })
     this.beforeUpload = this.beforeUpload.bind(this)
     this.onPreview = this.onPreview.bind(this)
     this.onRemove = this.onRemove.bind(this)
@@ -34,40 +37,63 @@ class Image extends React.Component {
 
   beforeUpload(file) {
     var self = this
+
+    var formData = new FormData();
+    formData.append("datum", file.name);
+    formData.append("datum", file);
+    // formData.append("datum", "text/plain");
     $.ajax({
-      url: 'http://test.ihomefnt.com:8510/cms-web/media/qiniutoken?bucketName=aijia-product-test',
+      url: window.location.origin + '/hbms/datum/pushDatum',
+      type: 'POST',
       dataType: 'json',
-      type: 'GET',
-      data: {},
+      data: formData,
+      processData: false,
+      contentType: false,
       success: function(data) {
-        if (data.code == 1) {
-          var token = data.obj.token;
-          var key = data.obj.key;
-          var domain = data.obj.downloadUrl
-          var formData = new FormData();
-          formData.append("token", token);
-          formData.append("file", file);
-          formData.append("accept", "text/plain");
-          $.ajax({
-            url: 'http://upload.qiniu.com',
-            type: 'POST',
-            dataType: 'json',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(data) {
-              file.url = 'http://' + domain + '/' + data.key;
-              self.state.fileList.push({uid: file.uid, name: file.name, status: 'done', url: file.url})
-              self.setState({fileList: self.state.fileList})
-              self.props.onChange(self.state.fileList)
-            },
-            error: function() {
-              console.debug('请检查网络');
-            }
-          });
-        }
+        file.url = 'http://' + data.data.url
+        self.state.fileList.push({uid: file.uid, name: file.name, status: 'done', url: file.url})
+        self.setState({fileList: self.state.fileList})
+        self.props.onChange(self.state.fileList)
+      },
+      error: function() {
+        console.debug('请检查网络');
       }
     });
+
+    // $.ajax({
+    //   url: 'http://test.ihomefnt.com:8510/cms-web/media/qiniutoken?bucketName=aijia-product-test',
+    //   dataType: 'json',
+    //   type: 'GET',
+    //   data: {},
+    //   success: function(data) {
+    //     if (data.code == 1) {
+    //       var token = data.obj.token;
+    //       var key = data.obj.key;
+    //       var domain = data.obj.downloadUrl
+    //       var formData = new FormData();
+    //       formData.append("token", token);
+    //       formData.append("file", file);
+    //       formData.append("accept", "text/plain");
+    //       $.ajax({
+    //         url: 'http://upload.qiniu.com',
+    //         type: 'POST',
+    //         dataType: 'json',
+    //         data: formData,
+    //         processData: false,
+    //         contentType: false,
+    //         success: function(data) {
+    //           file.url = 'http://' + domain + '/' + data.key;
+    //           self.state.fileList.push({uid: file.uid, name: file.name, status: 'done', url: file.url})
+    //           self.setState({fileList: self.state.fileList})
+    //           self.props.onChange(self.state.fileList)
+    //         },
+    //         error: function() {
+    //           console.debug('请检查网络');
+    //         }
+    //       });
+    //     }
+    //   }
+    // });
     return false
   }
 

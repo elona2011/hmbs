@@ -50,13 +50,20 @@ class Component extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    var imageList = []
-    nextProps.imageList && nextProps.imageList.forEach((n, i) => imageList.push(
-      <a href={n.url} target="_blank" className="upload-example" key={i}>
-        <img alt={n.url} src={n.url}/>
-      </a>
-    ))
-    this.setState({imageList})
+    var imageList = [],
+      image = {}
+    nextProps.imageList && nextProps.imageList.forEach((n, i) => {
+      imageList.push(
+        <a href={n.url} target="_blank" className="upload-example" key={i}>
+          <img alt={n.url} src={n.url}/>
+        </a>
+      )
+      if (!image[n.kind]) {
+        image[n.kind] = []
+      }
+      image[n.kind].push(n)
+    })
+    this.setState({imageList, image})
   }
 
   render() {
@@ -77,26 +84,26 @@ class Component extends React.Component {
             </Col>
             <Col span="11" offset={1}>
               <Card title="水电图" bordered={true}>
-                <Image onChange={this.handlePicture1}/>
+                <Image onChange={this.handlePicture1} fileList={this.state.image && this.state.image['6']}/>
               </Card>
             </Col>
           </Row>
           <Row>
             <Col span="11">
               <Card title="建筑测量图" bordered={true}>
-                <Image onChange={this.handlePicture2}/>
+                <Image onChange={this.handlePicture2} fileList={this.state.image && this.state.image['2']}/>
               </Card>
             </Col>
             <Col span="11" offset={1}>
               <Card title="吊顶图" bordered={true}>
-                <Image onChange={this.handlePicture3}/>
+                <Image onChange={this.handlePicture3} fileList={this.state.image && this.state.image['5']}/>
               </Card>
             </Col>
           </Row>
           <Row>
             <Col span={11}>
               <Card title="地面材质图" bordered={true}>
-                <Image onChange={this.handlePicture3}/>
+                <Image onChange={this.handlePicture4} fileList={this.state.image && this.state.image['4']}/>
               </Card>
             </Col>
           </Row>
